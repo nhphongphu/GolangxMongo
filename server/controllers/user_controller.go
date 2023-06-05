@@ -16,9 +16,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "chatAPI")
-var validate = validator.New()
+var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "user")
+var userValidate = validator.New()
 
+// =============================================================================
+// Function's name : CreateUser
+// Description   : Hàm này giúp tạo User
+// Caller :
+// IN/OUT   : IN 1. context
+//
+//	OUT 1. Data inserted into database, Http message
+//
+// =============================================================================
 func CreateUser(c *fiber.Ctx) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var user models.User
@@ -30,7 +39,7 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	//use the validator library to validate required fields
-	if validationErr := validate.Struct(&user); validationErr != nil {
+	if validationErr := userValidate.Struct(&user); validationErr != nil {
 		return c.Status(http.StatusBadRequest).JSON(responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
@@ -79,7 +88,7 @@ func EditAUser(c *fiber.Ctx) error {
 	}
 
 	//use the validator library to validate required fields
-	if validationErr := validate.Struct(&user); validationErr != nil {
+	if validationErr := userValidate.Struct(&user); validationErr != nil {
 		return c.Status(http.StatusBadRequest).JSON(responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: &fiber.Map{"data": validationErr.Error()}})
 	}
 
